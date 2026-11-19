@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inheritance Arena</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#2b1b6e;--bg2:#6a1b9a;--card:#ffffff;--ink:#2a1a4a;--mut:#6b5a8e;--pink:#ff4fa3;--yel:#ffd23f;--cyan:#27d3e6;--grn:#2ecc71;--red:#ff5a5f;--org:#ff9f1c;--line:#e6dcff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--card:#1f1540;--ink:#f3ecff;--mut:#b7a6e6;--line:#3b2a78}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;font-family:'Fredoka',system-ui,sans-serif;color:var(--ink);background:linear-gradient(135deg,var(--bg1),var(--bg2) 50%,#e91e8c);background-attachment:fixed;overflow-x:hidden}
+.wrap{max-width:860px;margin:0 auto;padding:18px 14px 40px}
+.card{background:var(--card);border-radius:26px;padding:22px;box-shadow:0 10px 0 rgba(0,0,0,.18),0 20px 40px rgba(0,0,0,.25)}
+h1{font-size:clamp(34px,8vw,58px);margin:0;line-height:1;color:#fff;text-shadow:0 4px 0 #ff4fa3,0 8px 0 rgba(0,0,0,.25);letter-spacing:.5px}
+.hero{text-align:center;color:#fff;margin:14px 0 22px}
+.hero p{font-size:18px;margin:14px 0 0;opacity:.95}
+.float{display:inline-block;font-size:44px;animation:fl 2.6s ease-in-out infinite}
+@keyframes fl{50%{transform:translateY(-10px) rotate(6deg)}}
+input{width:100%;font:inherit;font-size:18px;padding:14px 16px;border-radius:16px;border:3px solid var(--line);background:transparent;color:var(--ink);margin:6px 0 12px;outline:none}
+input:focus{border-color:var(--pink)}
+label{font-weight:600;color:var(--mut)}
+.btn{font:inherit;font-weight:700;font-size:19px;border:0;border-radius:18px;padding:14px 26px;cursor:pointer;color:#fff;background:linear-gradient(180deg,#ff6ab5,#ff2f92);box-shadow:0 6px 0 #b8165f;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 #b8165f}
+.btn.blue{background:linear-gradient(180deg,#4fc3ff,#1e88e5);box-shadow:0 6px 0 #0d5aa7}.btn.blue:active{box-shadow:0 1px 0 #0d5aa7}
+.btn.grn{background:linear-gradient(180deg,#4be08a,#12a85a);box-shadow:0 6px 0 #0a733c}.btn.grn:active{box-shadow:0 1px 0 #0a733c}
+.btn.ghost{background:transparent;color:#fff;box-shadow:none;border:2px solid #ffffff88;font-size:15px;padding:8px 16px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0}
+.rule{border-radius:18px;padding:12px;text-align:center;font-weight:600;color:#fff}
+.hud{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.pill{background:#ffffff26;color:#fff;border-radius:999px;padding:7px 16px;font-weight:700;backdrop-filter:blur(6px)}
+.bar{flex:1;min-width:140px;height:20px;border-radius:99px;background:#ffffff30;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--yel),var(--org),var(--pink));border-radius:99px;transition:width .5s}
+.tag{display:inline-block;padding:5px 14px;border-radius:99px;color:#fff;font-weight:700;font-size:14px;margin-bottom:10px}
+.q{font-size:clamp(19px,4.5vw,25px);font-weight:600;line-height:1.35;margin:4px 0 16px}
+pre{font-family:'JetBrains Mono',monospace;font-size:14px;background:#1b1240;color:#c9f;border-radius:16px;padding:14px;overflow-x:auto;margin:0 0 16px;border-left:6px solid var(--cyan)}
+.opts{display:grid;gap:12px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;font:inherit;font-size:18px;font-weight:500;color:var(--ink);background:transparent;border:3px solid var(--line);border-radius:18px;padding:13px 16px;cursor:pointer;transition:.15s}
+.opt:hover:not([disabled]){transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 6px 0 var(--cyan)}
+.opt b{flex:none;width:34px;height:34px;border-radius:12px;display:grid;place-items:center;color:#fff}
+.opt.ok{background:#2ecc7126;border-color:var(--grn);animation:pop .4s}
+.opt.no{background:#ff5a5f26;border-color:var(--red);animation:shake .4s}
+@keyframes pop{50%{transform:scale(1.04)}}@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.tf{grid-template-columns:1fr 1fr}.tf .opt{justify-content:center;font-size:24px;font-weight:700;padding:22px}
+.fb{margin-top:16px;padding:14px 16px;border-radius:16px;font-weight:500;animation:pop .4s}
+.fb.ok{background:#2ecc7126;border:2px solid var(--grn)}.fb.no{background:#ff5a5f22;border:2px solid var(--red)}
+.pool{display:flex;flex-wrap:wrap;gap:10px;min-height:54px;padding:12px;border:3px dashed var(--line);border-radius:18px;margin-bottom:14px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;padding:10px 14px;border-radius:14px;color:#fff;cursor:grab;user-select:none;box-shadow:0 4px 0 rgba(0,0,0,.25);touch-action:none}
+.chip.sel{outline:4px solid var(--yel);transform:scale(1.06)}
+.slot{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;border:3px solid var(--line);border-radius:18px;margin-bottom:10px;min-height:66px}
+.slot.over{border-color:var(--pink);background:#ff4fa31f}.slot.ok{border-color:var(--grn);background:#2ecc7122}.slot.no{border-color:var(--red);background:#ff5a5f22}
+.slot .lbl{flex:1;min-width:150px;font-weight:600}.slot .drop{min-width:190px;min-height:44px;border-radius:12px;background:#8a6cff14;display:flex;align-items:center;justify-content:center;padding:2px}
+.hint{color:var(--mut);font-size:14px;margin:0 0 12px}
+.medal{font-size:120px;line-height:1;animation:spin 1.2s ease-out}
+@keyframes spin{from{transform:scale(0) rotate(-360deg)}to{transform:none}}
+.center{text-align:center}.big{font-size:56px;font-weight:700;margin:6px 0}
+.break{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.break div{border-radius:18px;padding:12px;color:#fff;font-weight:600}
+.break span{display:block;font-size:28px;font-weight:700}
+.tbar{height:12px;border-radius:99px;background:#ffffff30;overflow:hidden;margin:-4px 0 14px}.tbar i{display:block;height:100%;width:100%;border-radius:99px;transition:width 1s linear,background .3s}
+.xp{position:fixed;left:50%;top:80px;transform:translateX(-50%);font-size:28px;font-weight:700;color:var(--yel);text-shadow:0 3px 0 #000a;pointer-events:none;animation:up 1s forwards;z-index:30}
+@keyframes up{to{top:30px;opacity:0}}
+.conf{position:fixed;top:-20px;font-size:26px;pointer-events:none;z-index:20;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+table{width:100%;border-collapse:collapse;font-size:15px}th,td{padding:10px 8px;text-align:left;border-bottom:2px solid var(--line)}
+th{background:linear-gradient(90deg,#6a1b9a,#e91e8c);color:#fff}th:first-child{border-radius:12px 0 0 12px}th:last-child{border-radius:0 12px 12px 0}
+.tw{overflow-x:auto}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:14px 0}
+.stats div{border-radius:18px;padding:12px;text-align:center;color:#fff;font-weight:600}.stats span{display:block;font-size:30px;font-weight:700}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.err{color:var(--red);font-weight:600;min-height:22px}
+.note{color:#fff;opacity:.85;font-size:13px;text-align:center;margin-top:16px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+:focus-visible{outline:4px solid var(--yel);outline-offset:2px}
+</style></head><body><div class="wrap" id="app"></div>
+<script>
+const COL=['#ff4fa3','#27a9e6','#ff9f1c','#8a4fff','#12a85a','#e8453c'];
+const Q=[
+{t:'mcq',q:'Class B extends A, and A has only a parameterised constructor A(int x). What happens when B has no explicit constructor?',o:['Compiles fine; A(0) is called','Compile-time error: no default super() constructor available','Runtime error when B is instantiated','Java skips the superclass constructor'],a:1,e:'The compiler inserts super() into B’s constructor. A has no no-arg constructor, so compilation fails.'},
+{t:'mcq',q:'What does this program print?',code:'class A { void show(){ System.out.println("A"); } }\nclass B extends A { void show(){ System.out.println("B"); } }\nA obj = new B();\nobj.show();',o:['A','B','Compile error','AB'],a:1,e:'Method overriding is resolved at runtime from the actual object type (B). This is dynamic dispatch.'},
+{t:'mcq',q:'In C++, which technique solves the “diamond problem” by keeping a single shared base subobject?',o:['Friend classes','Virtual inheritance','Static binding','Template specialisation'],a:1,e:'Virtual inheritance (class B : virtual public A) ensures D gets exactly one copy of A.'},
+{t:'mcq',q:'Python: class A; class B(A); class C(A); class D(B, C). What is D’s Method Resolution Order (C3)?',o:['D, B, A, C, object','D, A, B, C, object','D, B, C, A, object','D, C, B, A, object'],a:2,e:'C3 linearisation keeps local precedence (B before C) and puts A after both of its subclasses.'},
+{t:'mcq',q:'Which Java keyword prevents a class from being extended?',o:['static','abstract','sealed (without permits)','final'],a:3,e:'A final class cannot be subclassed (e.g. String). abstract actually requires subclassing.'},
+{t:'tf',q:'A Java class can directly extend two classes: class C extends A, B { }',a:false,e:'Java forbids multiple class inheritance. Use interfaces (implements) for multiple types.'},
+{t:'tf',q:'Private members of a superclass exist inside a subclass object but are not directly accessible by subclass code.',a:true,e:'They are part of the object’s memory layout, but access is restricted to the declaring class.'},
+{t:'tf',q:'Static methods in Java are overridden at runtime just like instance methods.',a:false,e:'Static methods are hidden, not overridden. They are bound at compile time by reference type.'},
+{t:'dnd',q:'Match each inheritance type to its structure.',hint:'Drag a chip into a slot. On mobile: tap a chip, then tap a slot.',slots:[['A → B','Single'],['A → B → C','Multilevel'],['A → B and A → C','Hierarchical'],['A and B → C','Multiple']],e:'Single: one parent. Multilevel: chain. Hierarchical: one parent, many children. Multiple: many parents.'},
+{t:'dnd',q:'Match each class declaration to its language.',hint:'Drag a chip into a slot. On mobile: tap a chip, then tap a slot.',slots:[['class B extends A','Java'],['class B : public A','C++'],['class B(A):','Python'],['class B < A','Ruby']],e:'Each language has its own inheritance syntax: extends, : public, (Parent), and &lt;.'}
+];
+const TY={mcq:['MULTIPLE CHOICE','#8a4fff'],tf:['TRUE OR FALSE','#ff9f1c'],dnd:['DRAG AND DROP','#12a85a']};
+const app=document.getElementById('app');
+let S={i:0,score:0,xp:0,streak:0,best:0,sec:{mcq:0,tf:0,dnd:0},log:[],sel:null};
+let db=null,teacher=false,rows=[],unsub=null,started=0;
+const $=(h)=>{const d=document.createElement('div');d.innerHTML=h;return d.firstElementChild};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function medal(s){return s>=9?['🥇','GOLD','Inheritance Grandmaster!','#ffc400']:s>=7?['🥈','SILVER','Class-act Challenger!','#b0bec5']:s>=5?['🥉','BRONZE','Rising Subclass!','#cd7f32']:['🎯','PARTICIPANT','Extend yourself and try again!','#8a4fff']}
+/* ====== PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BETWEEN THE QUOTES ====== */
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbxofPrfiSSvWtA7gjlCa2QreeCE2mwa1SADn_z5xsB3O-qvgi_-taLLn7mHL5TVU2b3XQ/exec';
+let CRED={u:'',p:''},SHEET='';
+
+function home(err){
+ if(unsub){unsub();unsub=null}
+ app.innerHTML='';
+ app.append($(`<div><div class="hero"><span class="float">🧬</span><h1>Inheritance Arena</h1><p>10 challenges. One crown. Prove you’re the best subclass in the room.</p></div>
+ <div class="card"><label>Your name</label><input id="nm" maxlength="40" placeholder="e.g. Ananya R">
+ <label>Register number</label><input id="rn" maxlength="20" placeholder="e.g. 24MCS017">
+ <div class="rules"><div class="rule" style="background:#8a4fff">🎯 5 MCQ</div><div class="rule" style="background:#ff9f1c">⚡ 3 True / False</div><div class="rule" style="background:#12a85a">🧩 2 Drag &amp; Drop</div></div>
+ <p class="hint">⏱ You get 20 seconds per question. &nbsp; 🥇 Gold 9–10 &nbsp; 🥈 Silver 7–8 &nbsp; 🥉 Bronze 5–6 &nbsp; Build a streak for bonus XP!</p>
+ <div class="err" id="er">${err||''}</div><div class="row"><button class="btn" id="go">Start the Quest 🚀</button><button class="btn ghost" id="tl" style="border-color:var(--mut);color:var(--mut)">Teacher login</button></div></div>
+ <div class="note">One attempt per student is recommended. Scores are sent to your teacher’s Google Sheet on finish.</div></div>`));
+ document.getElementById('go').onclick=()=>{const n=nm.value.trim(),r=rn.value.trim();if(!n||!r){er.textContent='Please enter your name and register number.';return}
+  S={i:0,score:0,xp:0,streak:0,best:0,sec:{mcq:0,tf:0,dnd:0},log:[],sel:null,name:n,roll:r};started=Date.now();quiz()};
+ document.getElementById('tl').onclick=login;
+}
+function login(err){
+ app.innerHTML='';
+ app.append($(`<div class="hero"><span class="float">🔐</span><h1>Teacher Zone</h1></div>`));
+ app.append($(`<div class="card"><label>Username</label><input id="u" autocomplete="off"><label>Password</label><input id="p" type="password">
+ <div class="err" id="er">${err||''}</div><div class="row"><button class="btn blue" id="in">Enter dashboard</button><button class="btn ghost" id="bk" style="border-color:var(--mut);color:var(--mut)">Back</button></div></div>`));
+ document.getElementById('in').onclick=async()=>{const uu=u.value.trim(),pp=p.value;er.textContent='Checking…';
+  if(!SCRIPT_URL.startsWith('http')){er.textContent='Set SCRIPT_URL in index.html first.';return}
+  try{const r=await fetch(SCRIPT_URL+'?action=list&u='+encodeURIComponent(uu)+'&p='+encodeURIComponent(pp));const j=await r.json();
+   if(j.ok){teacher=true;CRED={u:uu,p:pp};dash()}else er.textContent='Wrong username or password.'}catch(e){er.textContent='Could not reach the server. Check SCRIPT_URL and deployment access.'}};
+ document.getElementById('bk').onclick=()=>home();
+ p.onkeydown=e=>{if(e.key==='Enter')document.getElementById('in').click()};
+}
+function hud(){return `<div class="hud"><span class="pill">Q ${S.i+1}/${Q.length}</span><div class="bar"><i style="width:${S.i/Q.length*100}%"></i></div><span class="pill" id="tm">⏱ 20s</span><span class="pill">⭐ ${S.xp} XP</span><span class="pill">🔥 ${S.streak}</span></div>`}
+function quiz(){
+ clearInterval(TM);S.done=false;S.to=false;
+ if(S.i>=Q.length)return finish();
+ const q=Q[S.i],[lab,col]=TY[q.t];S.sel=null;app.innerHTML='';
+ app.append($(`<div>${hud()}<div class="tbar"><i id="tfill"></i></div><div class="card" id="c"><span class="tag" style="background:${col}">${lab}</span><div class="q">${q.q}</div></div></div>`));
+ const c=document.getElementById('c');
+ if(q.code)c.append($(`<pre>${esc(q.code)}</pre>`));
+ if(q.t==='mcq'||q.t==='tf'){
+  const box=$(`<div class="opts ${q.t==='tf'?'tf':''}"></div>`);
+  const opts=q.t==='tf'?['✅ True','❌ False']:q.o;
+  opts.forEach((t,k)=>{const b=$(`<button class="opt">${q.t==='mcq'?`<b style="background:${COL[k]}">${'ABCD'[k]}</b>`:''}<span>${t}</span></button>`);
+   b.onclick=()=>{const right=q.t==='tf'?((k===0)===q.a):k===q.a;
+    [...box.children].forEach((x,j)=>{x.disabled=true;const rj=q.t==='tf'?((j===0)===q.a):j===q.a;if(rj)x.classList.add('ok');else if(j===k)x.classList.add('no')});
+    grade(q,right,c)};box.append(b)});c.append(box);
+ }else{
+  c.append($(`<p class="hint">${q.hint}</p>`));
+  const pool=$(`<div class="pool"></div>`);
+  const items=q.slots.map(s=>s[1]).sort(()=>Math.random()-.5);
+  items.forEach((t,k)=>{const ch=$(`<span class="chip" draggable="true" style="background:${COL[k%6]}">${t}</span>`);
+   ch.ondragstart=e=>{e.dataTransfer.setData('text','x');S.sel=ch;ch.classList.add('sel')};
+   ch.ondragend=()=>ch.classList.remove('sel');
+   ch.onclick=e=>{e.stopPropagation();if(S.sel)S.sel.classList.remove('sel');S.sel=S.sel===ch?null:ch;if(S.sel)ch.classList.add('sel')};
+   pool.append(ch)});
+  pool.ondragover=e=>e.preventDefault();pool.ondrop=e=>{e.preventDefault();if(S.sel)pool.append(S.sel)};
+  pool.onclick=()=>{if(S.sel){pool.append(S.sel);S.sel.classList.remove('sel');S.sel=null}};
+  c.append(pool);
+  q.slots.forEach(s=>{const sl=$(`<div class="slot"><div class="lbl"><code style="font-family:'JetBrains Mono',monospace">${s[0]}</code></div><div class="drop"><small style="color:var(--mut)">drop here</small></div></div>`);
+   const dr=sl.querySelector('.drop');
+   const put=()=>{if(!S.sel)return;const old=dr.querySelector('.chip');if(old)pool.append(old);dr.innerHTML='';dr.append(S.sel);S.sel.classList.remove('sel');S.sel=null;sl.classList.remove('over')};
+   sl.ondragover=e=>{e.preventDefault();sl.classList.add('over')};sl.ondragleave=()=>sl.classList.remove('over');
+   sl.ondrop=e=>{e.preventDefault();put()};sl.onclick=put;c.append(sl)});
+  const ck=$(`<button class="btn grn" style="margin-top:6px">Lock in answer 🔒</button>`);
+  ck.onclick=()=>{const sls=[...c.querySelectorAll('.slot')];if(sls.some(s=>!s.querySelector('.chip'))){ck.textContent='Fill every slot first!';return}
+   let all=true;sls.forEach((s,k)=>{const ok=s.querySelector('.chip').textContent===q.slots[k][1];s.classList.add(ok?'ok':'no');if(!ok)all=false;s.onclick=null;s.ondrop=null;
+    const ch=s.querySelector('.chip');ch.draggable=false;ch.onclick=null;if(!ok)s.querySelector('.lbl').insertAdjacentHTML('beforeend',`<div style="color:var(--grn);font-size:14px">✔ ${q.slots[k][1]}</div>`)});
+   ck.remove();grade(q,all,c)};
+  c.append(ck);
+ }
+ startTimer(q,c);
+}
+let TM=null;
+function startTimer(q,c){clearInterval(TM);let t=20;const lab=document.getElementById('tm'),f=document.getElementById('tfill');
+ const draw=()=>{lab.textContent='⏱ '+t+'s';f.style.width=(t/20*100)+'%';f.style.background=t<=5?'#ff5a5f':t<=10?'#ff9f1c':'#2ecc71';lab.style.background=t<=5?'#ff5a5f':''};
+ draw();TM=setInterval(()=>{t--;draw();if(t<=0){clearInterval(TM);timeUp(q,c)}},1000)}
+function timeUp(q,c){if(S.done)return;S.to=true;
+ if(q.t==='dnd'){let all=true;
+  c.querySelectorAll('.slot').forEach((s,k)=>{const ch=s.querySelector('.chip');const ok=!!ch&&ch.textContent===q.slots[k][1];s.classList.add(ok?'ok':'no');s.onclick=null;s.ondrop=null;if(ch){ch.draggable=false;ch.onclick=null}
+   if(!ok){all=false;s.querySelector('.lbl').insertAdjacentHTML('beforeend',`<div style="color:var(--grn);font-size:14px">✔ ${q.slots[k][1]}</div>`)}});
+  const b=c.querySelector('.btn.grn');if(b)b.remove();const pl=c.querySelector('.pool');pl.onclick=null;pl.ondrop=null;pl.querySelectorAll('.chip').forEach(x=>{x.draggable=false;x.onclick=null});
+  S.sel=null;grade(q,all,c)}
+ else{[...c.querySelector('.opts').children].forEach((x,j)=>{x.disabled=true;const rj=q.t==='tf'?((j===0)===q.a):j===q.a;if(rj)x.classList.add('ok')});grade(q,false,c)}}
+function grade(q,right,c){
+ if(S.done)return;S.done=true;clearInterval(TM);
+ S.sec[q.t]+=right?1:0;
+ if(right){S.score++;S.streak++;S.best=Math.max(S.best,S.streak);const g=100+Math.min(S.streak-1,4)*25;S.xp+=g;float('+'+g+' XP'+(S.streak>1?' 🔥':''));burst()}else S.streak=0;
+ S.log.push(right?1:0);
+ c.append($(`<div class="fb ${right?'ok':'no'}">${right?'🎉 Correct! ':S.to?'⏰ Time’s up! ':'💥 Not quite. '}${q.e}</div>`));
+ c.append($(`<div style="margin-top:16px"><button class="btn blue" id="nx">${S.i===Q.length-1?'See my medal 🏅':'Next challenge ➜'}</button></div>`));
+ document.getElementById('nx').onclick=()=>{S.i++;quiz();scrollTo(0,0)};
+}
+function float(t){const x=$(`<div class="xp">${t}</div>`);document.body.append(x);setTimeout(()=>x.remove(),1000)}
+function burst(n=22){const e=['⭐','✨','🎉','💜','🟡','🔷'];for(let i=0;i<n;i++){const x=$(`<span class="conf">${e[i%e.length]}</span>`);x.style.left=Math.random()*100+'vw';x.style.animationDuration=(1.4+Math.random()*1.6)+'s';document.body.append(x);setTimeout(()=>x.remove(),3200)}}
+async function finish(){
+ const m=medal(S.score),secs=Math.round((Date.now()-started)/1000);
+ const rec={name:S.name,roll:S.roll,score:S.score,total:Q.length,mcq:S.sec.mcq,tf:S.sec.tf,dnd:S.sec.dnd,medal:m[1],xp:S.xp,bestStreak:S.best,seconds:secs,time:new Date().toISOString()};
+ app.innerHTML='';burst(60);
+ app.append($(`<div class="card center"><div class="medal">${m[0]}</div><h2 style="margin:8px 0;font-size:34px;color:${m[3]}">${m[1]} MEDAL</h2><div style="font-size:20px;font-weight:600">${m[2]}</div>
+ <div class="big">${S.score} / ${Q.length}</div>
+ <div class="break"><div style="background:#8a4fff">MCQ<span>${S.sec.mcq}/5</span></div><div style="background:#ff9f1c">True/False<span>${S.sec.tf}/3</span></div><div style="background:#12a85a">Drag &amp; Drop<span>${S.sec.dnd}/2</span></div></div>
+ <p style="font-weight:600">⭐ ${S.xp} XP &nbsp; 🔥 Best streak ${S.best} &nbsp; ⏱ ${Math.floor(secs/60)}m ${secs%60}s</p>
+ <p class="hint" id="sv">Sending your score to your teacher…</p><button class="btn" id="again">Back to start</button></div>`));
+ document.getElementById('again').onclick=()=>home();
+ let ok=false;
+ try{if(SCRIPT_URL.startsWith('http')){await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(rec)});ok=true}}catch(e){}
+ if(!ok){try{const a=JSON.parse(localStorage.getItem('ia_local')||'[]');a.push(rec);localStorage.setItem('ia_local',JSON.stringify(a))}catch(e){}}
+ document.getElementById('sv').textContent=ok?'✅ Score submitted to your teacher.':'⚠️ Could not reach Google Sheets. Score saved on this device only; show this screen to your teacher.';
+}
+function dash(){
+ app.innerHTML='';
+ app.append($(`<div class="hero" style="margin-bottom:12px"><span class="float">📊</span><h1 style="font-size:clamp(30px,7vw,48px)">Teacher Dashboard</h1></div>`));
+ const card=$(`<div class="card"><div class="row"><b id="cnt">Loading results…</b><div class="row"><button class="btn grn" id="dl" style="font-size:16px;padding:10px 18px">⬇ Download CSV</button><button class="btn ghost" id="lo" style="border-color:var(--mut);color:var(--mut)">Log out</button></div></div><div class="stats" id="st"></div><div class="tw" id="tb"></div></div>`);
+ app.append(card);
+ document.getElementById('lo').onclick=()=>{teacher=false;if(unsub)unsub();unsub=null;home()};
+ document.getElementById('dl').onclick=csv;
+ const draw=()=>{
+  const n=rows.length,avg=n?(rows.reduce((a,r)=>a+r.score,0)/n).toFixed(1):'0';
+  const c=k=>rows.filter(r=>r.medal===k).length;
+  document.getElementById('cnt').innerHTML=n+' submission'+(n===1?'':'s')+' (auto-refresh)'+(SHEET?' &middot; <a href="'+SHEET+'" target="_blank" rel="noopener" style="color:#e91e8c">Open Google Sheet</a>':'');
+  document.getElementById('st').innerHTML=`<div style="background:#8a4fff">Avg score<span>${avg}</span></div><div style="background:#ffc400;color:#4a3500">🥇 Gold<span>${c('GOLD')}</span></div><div style="background:#90a4ae">🥈 Silver<span>${c('SILVER')}</span></div><div style="background:#cd7f32">🥉 Bronze<span>${c('BRONZE')}</span></div>`;
+  document.getElementById('tb').innerHTML=n?`<table><tr><th>#</th><th>Name</th><th>Reg No</th><th>Score</th><th>MCQ</th><th>T/F</th><th>DnD</th><th>Medal</th></tr>${rows.map((r,k)=>`<tr><td>${k+1}</td><td>${esc(r.name)}</td><td>${esc(r.roll)}</td><td><b>${r.score}/${r.total}</b></td><td>${r.mcq}/5</td><td>${r.tf}/3</td><td>${r.dnd}/2</td><td>${({GOLD:'🥇',SILVER:'🥈',BRONZE:'🥉'})[r.medal]||'🎯'} ${r.medal}</td></tr>`).join('')}</table>`:'<p class="hint">No submissions yet. Share this page link with your students.</p>';
+ };
+ const set=docs=>{rows=docs.map(d=>d.data()).sort((a,b)=>b.score-a.score||a.seconds-b.seconds);draw()};
+ const load=async()=>{try{const r=await fetch(SCRIPT_URL+'?action=list&u='+encodeURIComponent(CRED.u)+'&p='+encodeURIComponent(CRED.p));const x=await r.json();if(!x.ok)throw 0;SHEET=x.sheetUrl||'';
+   rows=x.rows.map(o=>({...o,score:+o.score,total:+o.total,mcq:+o.mcq,tf:+o.tf,dnd:+o.dnd,seconds:+o.seconds,xp:+o.xp,bestStreak:+o.bestStreak,time:String(o.time||'')}));
+   rows.sort((a,b)=>b.score-a.score||a.seconds-b.seconds)}catch(e){}draw()};
+ load();const iv=setInterval(load,15000);unsub=()=>clearInterval(iv);
+}
+async function csv(){
+ const h=['Name','Register No','Total','MCQ (5)','True/False (3)','Drag&Drop (2)','Medal','XP','Best Streak','Time (s)','Submitted At'];
+ const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+ const t=[h.map(q).join(',')].concat(rows.map(r=>[r.name,r.roll,r.score,r.mcq,r.tf,r.dnd,r.medal,r.xp,r.bestStreak,r.seconds,r.time].map(q).join(','))).join('\n');
+ const data='\ufeff'+t;
+ 
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download='inheritance_results.csv';a.click();
+}
+home();
+</script></body></html>
